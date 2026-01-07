@@ -22,7 +22,7 @@ Bu rehber, OpenBB Mobile API'yi Mobil Uygulama, Web Sitesi ve Desktop Uygulamas�
 Mobil, Web ve Desktop uygulamalarınızın bu API'ye sorunsuz bağlanması için AWS'de şu 3 şeyi doğru yapmalısınız:
 
 ### 1. CORS Ayarları (Web Sitesi İçin Şart)
-Web siteniz API'ye istek attığında tarayıcı güvenliği (CORS) engeline takılmamak için `app/config.py` içinde `CORS_ORIGINS` kısmına sitenizin adresini ekleyin.
+Web siteniz API'\\ye istek attığında tarayıcı güvenliği (CORS) engeline takılmamak için `app/config.py` içinde `CORS_ORIGINS` kısmına sitenizin adresini ekleyin.
 *   **Lightsail/EC2'de:** Nginx konfigürasyonunda `Access-Control-Allow-Origin` set edilmelidir.
 *   **App Runner'da:** Otomatik halledilir.
 
