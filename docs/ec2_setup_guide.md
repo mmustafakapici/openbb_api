@@ -55,25 +55,34 @@ pip install -r requirements.txt
 
 ---
 
-## 🚀 4. API'yi Arka Planda Çalıştırma (Screen)
-Uzak terminali kapatsanız bile API'nin çalışmaya devam etmesi için `screen` kullanıyoruz:
+## 🚀 4. API'yi Arka Planda Çalıştırma (Production)
 
-1. Yeni bir ekran açın:
-   ```bash
-   screen -S openbb_api
-   ```
-2. Sanal ortamı aktif edin (etmediyseniz):
-   ```bash
-   source venv/bin/activate
-   ```
-3. API'yi başlatın:
-   ```bash
-   uvicorn app.main:app --host 0.0.0.0 --port 8007
-   ```
-4. **Oturumdan Ayrılın:** Klavyede `CTRL + A` tuşuna basıp hemen ardından `D` tuşuna basın. (Detached)
+Terminali kapatsanız bile API'nin çalışmaya devam etmesi için hazırladığım özel scriptleri kullanabilirsiniz.
 
-> **Geri bağlanmak için:** `screen -r openbb_api` komutunu kullanabilirsiniz.
+### API'yi Başlatma:
+```bash
+# Scripti çalıştırma izni ver (ilk seferde)
+chmod +x scripts/start_prod.sh scripts/stop_prod.sh
 
+# API'yi arka planda başlat
+./scripts/start_prod.sh
+```
+Bu script şunları yapar:
+- Çalışan eski API süreçlerini temizler.
+- API'yi 4 worker (iş parçacığı) ile başlatır (daha yüksek performans için).
+- Logları `logs/api.log` dosyasına yazar.
+- Terminali kapatsanız bile API çalışmaya devam eder.
+
+### Logları İzleme:
+API ne yapıyor, kimler istek atıyor görmek istiyorsanız:
+```bash
+tail -f logs/api.log
+```
+
+### API'yi Durdurma:
+```bash
+./scripts/stop_prod.sh
+```
 ---
 
 ## 🔒 5. AWS Güvenlik Grubu (Security Group) Ayarı
