@@ -10,6 +10,8 @@ Bu klasör, projenin geliştirilmesi ve yayına alınması (deployment) için ge
     *   App Runner, EC2 ve Lightsail seçeneklerinin kıyaslaması ve genel mimari gereksinimler.
 3.  **[EC2 Micro Kurulum Rehberi](./ec2_setup_guide.md)**
     *   Ubuntu üzerinde sıfırdan Python ortamı kurma, Swap RAM yapılandırması ve API'yi yayına alma adımları.
+4.  **[Mobil Uygulama Özellikleri & Vizyon](./mobile_features.md)**
+    *   API verilerini kullanarak geliştirebileceğiniz "Killer Feature" fikirleri ve mobil uygulama yol haritası.
 
 ---
 

@@ -27,93 +27,128 @@ VITE_API_URL=http://<YOUR-EC2-ELASTIC-IP>:8007/api/v2/mobile
 
 ---
 
-## 🛠️ Temel Özellikler (Frontend İpuçları)
+## 📍 Terminal (Endpoint) Listesi
 
-### 1. Alan Filtreleme (Field Filtering)
-Daha az veri tüketmek istiyorsanız, sadece ihtiyacınız olan alanları isteyebilirsiniz:
-`GET /yfinance/quote?symbol=AAPL&fields=symbol,price,change`
+Tüm endpoint'ler `/api/v2/mobile` prefix'i ile başlar.
 
-### 2. Önbellek (Caching)
-Cevaplardaki `X-Cache` header'ını kontrol ederek verinin önbellekten gelip gelmediğini görebilirsiniz:
-- `X-Cache: HIT` (Önbellekten geldi, süper hızlı)
-- `X-Cache: MISS` (Yeni çekildi)
+### 📈 Hisse Senedi & Yatırım Araçları (Equity & ETF)
+| Endpoint | Method | Sağlayıcı | Açıklama |
+| :--- | :--- | :--- | :--- |
+| `/yfinance/quote` | `GET` | YFinance | Anlık hisse fiyatı ve temel istatistikler. |
+| `/yfinance/historical` | `GET` | YFinance | Geçmiş OHLCV verileri (Günlük/Haftalık). |
+| `/yfinance/profile` | `GET` | YFinance | Şirket künyesi (Sektör, Sanayi, Web sitesi). |
+| `/yfinance/batch/quotes` | `POST` | YFinance | Çoklu hisse senedi/kripto fiyat çekme. |
+| `/yfinance/screener/gainers`| `GET` | YFinance | Günün en çok değer kazananları. |
+| `/yfinance/etf/info` | `GET` | YFinance | ETF detayları (Gider oranı, AUM, NAV). |
+| `/sec/filings` | `GET` | SEC | Şirket resmi bildirimleri (10-K, 10-Q). |
+| `/sec/insider/trading` | `GET` | SEC | Kurumsal/İçeriden ticaret işlemleri. |
 
----
+### 💎 Kripto, Döviz & Opsiyonlar
+| Endpoint | Method | Sağlayıcı | Açıklama |
+| :--- | :--- | :--- | :--- |
+| `/yfinance/crypto/quote` | `GET` | YFinance | Kripto fiyat (Market Cap, 24h Change). |
+| `/yfinance/currency/quote`| `GET` | YFinance | Forex parite (Örn: EURUSD=X). |
+| `/ecb/forex` | `GET` | ECB | Avrupa Merkez Bankası döviz kurları. |
+| `/cboe/options/chains` | `GET` | CBOE | Opsiyon zinciri (Strike, IV, OI). |
+| `/cftc/cot` | `GET` | CFTC | Komitman pozisyon raporları. |
 
-## 📍 En Önemli Endpoint Listesi
-
-### 📈 Hisse Senedi & Yatırım Araçları (YFinance)
-| Endpoint | Method | Açıklama |
-| :--- | :--- | :--- |
-| `/yfinance/quote` | `GET` | Anlık hisse fiyatı ve değişim verileri. |
-| `/yfinance/historical` | `GET` | Geçmiş veriler (OHLCV). Pagination desteği var. |
-| `/yfinance/profile` | `GET` | Şirket künyesi, açıklamalar ve sektör bilgisi. |
-| `/yfinance/batch/quotes` | `POST` | **Toplu İstek:** `{"symbols": ["AAPL", "TSLA"]}` |
-| `/yfinance/screener/gainers`| `GET` | Günün en çok kazandıran hisseleri. |
-
-### 💎 Kripto & Döviz
-| Endpoint | Method | Açıklama |
-| :--- | :--- | :--- |
-| `/yfinance/crypto/quote` | `GET` | Kripto fiyat verileri (Örn: BTC-USD). |
-| `/yfinance/currency/quote`| `GET` | Forex parite verileri (Örn: EURUSD=X). |
-| `/ecb/forex` | `GET` | **Yeni:** Avrupa Merkez Bankası döviz kurları. |
-
-### 🛠️ Gelişmiş Finansal Veriler
-| Endpoint | Method | Açıklama |
-| :--- | :--- | :--- |
-| `/cboe/options/chains` | `GET` | **Yeni:** Opsiyon zinciri verileri (Strike, IV, OI). |
-| `/cftc/cot` | `GET` | **Yeni:** Piyasa pozisyon raporları (Komitman raporları). |
-| `/sec/filings` | `GET` | Şirket resmi bildirimleri (10-K, 10-Q vb.). |
+### 🏛️ Ekonomi (Macro)
+| Endpoint | Method | Sağlayıcı | Açıklama |
+| :--- | :--- | :--- | :--- |
+| `/fed/treasury/rates` | `GET` | Fed | Hazine faiz oranları (1A - 30Y). |
+| `/fed/federal/funds/rate`| `GET` | Fed | Federal Fon Oranı (FFR). |
+| `/fed/sofr/rate` | `GET` | Fed | SOFR (Overnight Financing Rate). |
+| `/fed/yield/curve` | `GET` | Fed | Verim eğrisi (Yield Curve) veri noktaları. |
 
 ---
 
-## 📦 Veri Şemaları (TypeScript İçin Taslaklar)
+## 📦 Veri Şemaları (TypeScript Model)
 
-Frontend tarafında kullanabileceğiniz temel model yapıları şöyledir:
-
-### 1. Hisse Fiyat Şeması (`EquityQuoteResponse`)
+### 1. Fiyat Bilgisi (`EquityQuoteResponse`)
 ```typescript
 interface EquityQuote {
-  symbol: string;         // Örn: "AAPL"
-  name: string;           // Şirket Adı
-  price: number;          // Mevcut Fiyat
-  change: number;         // Günlük Değişim ($)
-  change_percent: number; // Günlük Değişim (%)
-  volume: number;         // İşlem Hacmi
-  market_cap: number;     // Piyasa Değeri
-  last_updated: string;   // ISO 8601 Tarih
+  symbol: string;
+  name?: string;
+  price: number;
+  change: number;
+  change_percent: number;
+  volume?: number;
+  market_cap?: number;
+  last_updated: string; // ISO 8601
 }
 ```
 
-### 2. Opsiyon Şeması (`OptionsChainResponse`)
+### 2. Kripto Bilgisi (`CryptoQuoteResponse`)
+```typescript
+interface CryptoQuote {
+  symbol: string;
+  name?: string;
+  price: number;
+  change_24h: number;
+  change_percent_24h: number;
+  volume_24h?: number;
+  market_cap?: number;
+  last_updated: string;
+}
+```
+
+### 3. Opsiyon Zinciri (`OptionsChainResponse`)
 ```typescript
 interface OptionsChain {
-  expiration: string;     // Vade Tarihi
-  strike: number;         // Kullanım Fiyatı
-  option_type: string;    // "call" veya "put"
-  last_price: number;
-  bid: number;
-  ask: number;
-  volume: number;
-  open_interest: number;
-  implied_volatility: number;
+  expiration: string;
+  strike: number;
+  option_type: "call" | "put";
+  last_price?: number;
+  bid?: number;
+  ask?: number;
+  volume?: number;
+  open_interest?: number;
+  implied_volatility?: number;
 }
 ```
 
-### 3. COT Raporu Şeması (`COTReportResponse`)
+### 4. Ekonomi/Faiz (`TreasuryRateResponse`)
 ```typescript
-interface COTReport {
+interface TreasuryRate {
+  maturity: string; // Örn: "10Y"
+  rate: number;
   date: string;
-  market: string;
-  non_commercial_long: number;
-  non_commercial_short: number;
-  commercial_long: number;
-  commercial_short: number;
-  open_interest: number;
 }
 ```
 
 ---
+
+## 📄 Sayfalama (Pagination)
+Historical veri dönen endpoint'lerde response şu yapıdadır:
+
+```typescript
+interface PaginatedResponse<T> {
+  data: T[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    total_pages: number;
+    has_next: boolean;
+    has_prev: boolean;
+  }
+}
+```
+
+---
+
+## 🏁 Genel Durum & Sürüm
+Sistemin ayakta olup olmadığını kontrol etmek için:
+`GET /health`
+
+Cevap:
+```json
+{
+  "status": "ok",
+  "version": "2.0.0",
+  "cache_enabled": true
+}
+```
 
 ## ⚠️ Hata Yönetimi
 Hata durumunda (4xx veya 5xx) API şu formatta bir cevap döner:
